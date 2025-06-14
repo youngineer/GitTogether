@@ -11,10 +11,9 @@
 - PATCH prifile/password
 
 # connectionRequestRouter
-- POST /request/send/interested/:userId
-- POST /request/send/ignored/:userId
-- POST /request/send/accepted/:requestId
-- POST /request/send/rejected/:requestId
+- POST /request/send/:status/:userId -> status = ["interested", "ignored"]
+
+- POST /request/review/:status/:requesterId -> status = "interested"
 
 # usersRouter
 - GET /user/connections

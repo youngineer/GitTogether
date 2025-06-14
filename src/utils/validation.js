@@ -1,4 +1,5 @@
 const validator = require('validator');
+const { ALLOWED_PROFILE_UPDATES } = require("../utils/constants");
 
 
 function signupValidation(data) {
@@ -14,6 +15,12 @@ function signupValidation(data) {
 };
 
 
+function validateProfileEditRequest(data) {
+    return Object.keys(data).every(field => ALLOWED_PROFILE_UPDATES.includes(field));
+}
+
+
 module.exports = {
-    signupValidation
+    signupValidation,
+    validateProfileEditRequest
 }

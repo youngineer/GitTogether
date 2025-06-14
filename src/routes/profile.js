@@ -1,6 +1,8 @@
 const express = require("express");
 const { User } = require("../models/user");
 const { userAuth } = require("../middleware/auth");
+const { validateProfileEditRequest } = require("../utils/validation");
+const { JsonWebTokenError } = require("jsonwebtoken");
 const profileRouter = express.Router();
 
 // Feed: Fetch all users
@@ -48,5 +50,32 @@ profileRouter.patch("/profile/edit/:userId", userAuth, async(req, resp) => {
   }
 });
 
+
+profileRouter.patch("/profile/edit", userAuth, async(req, resp) => {
+  try {
+    const updatedUserData = req.body;
+    const userId = req.user._id;
+    console.log(updatedUserData);
+    if(!validateProfileEditRequest(updatedUserData)) {
+      throw new Error("Edit not allowed");
+    }
+
+    const userToUpdate = await User.findByIdAndUpdate({_id: userId}, updatedUserData, {
+      runValidators: true
+    });
+    if (!userToUpdate) {
+      resp.status(404).send("User not found");
+    } else {
+      resp.send("User updated successfully!");
+    }
+  } catch (err) {
+    throw new Error("Something went wrong: " + err.message);
+  }
+});
+
+//TODO Forgot password
+// profileRouter.post("/profile/password", async(req, resp) => {
+//   const userInputData = req.body
+// })
 
 module.exports = profileRouter;

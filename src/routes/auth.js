@@ -3,6 +3,7 @@ const { signupValidation } = require("../utils/validation");
 const authRouter = express.Router();
 const bcrypt = require("bcrypt");
 const { User } = require("../models/user");
+const jwt = require("jsonwebtoken");
 
 
 // User Signup
@@ -48,8 +49,17 @@ authRouter.post("/login", async (req, resp) => {
     resp.cookie("token", token);
     resp.send("Login successful!");
   } catch (err) {
-    resp.status(400).send("Login unsuccessful!");
+    resp.status(400).send("Something went wrong: " + err.message);
   }
+});
+
+
+authRouter.post("/logout", async(req, resp) => {
+  resp.cookie("token", null, {
+    expiresIn: new Date(Date.now()),
+  });
+
+  resp.send("Logout successful!");
 });
 
 
