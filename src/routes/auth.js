@@ -7,7 +7,7 @@ const jwt = require("jsonwebtoken");
 
 
 // User Signup
-authRouter.post("/signup", async (req, res) => {
+authRouter.post("/signup", async (req, resp) => {
   try {
     signupValidation(req); //user data validation
 
@@ -21,15 +21,20 @@ authRouter.post("/signup", async (req, res) => {
       password: hashedPassword
     });
 
-    await user.save()
-      .then(() => {
-        res.send("User Added successfully!");
-      }).catch(err => {
-        res.status(400).send("Error saving the user:" + err.message);
-      })
+    const userSavedResponse = await user.save();
+    const token = user.getJWT();
+    resp.cookie("token", token);
+    
+    resp.json({
+      message: "User saved successfully!",
+      data: userSavedResponse
+    });
     
   } catch (error) {
-    res.status(400).send("Error saving the user:" + error.message);
+    resp.status(400).json({
+      message: "Error saving the user:" + error.message,
+      data: []
+    });
   }
 });
 
@@ -47,7 +52,9 @@ authRouter.post("/login", async (req, resp) => {
 
     const token = user.getJWT();
     resp.cookie("token", token);
-    resp.send("Login successful!");
+    resp.json({
+      data: user
+    });
   } catch (err) {
     resp.status(400).send("Something went wrong: " + err.message);
   }

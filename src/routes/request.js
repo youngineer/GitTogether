@@ -78,12 +78,14 @@ requestRouter.post("/request/review/:status/:connectionRequesterId", userAuth, a
 
     if(!connectionRequest) {
       return resp.status(404).json({
-        message: "Request not found"
+        message: "Request not found",
+        body: []
       });
     }
 
     connectionRequest.status = status;
     const data = await connectionRequest.save();
+    console.log(data)
 
     resp.status(201).json({
       message: "Connection request accepted successfully!",

@@ -15,9 +15,11 @@ userRouter.get("/user/requests", userAuth, async(req, resp) => {
 
         if(pendingRequests.length === 0) {
             return resp.status(404).json({
-                message: "No pending requests available"
+                message: "No pending requests available",
+                data: []
             });
         };
+
 
         resp.status(200).json({
             message: "Pending requests available",
@@ -49,12 +51,15 @@ userRouter.get("/user/connections", userAuth, async (req, resp) => {
             });
         }
 
-        const data = acceptedConnections.map((row) => {
-            if (row.fromUserId._id.toString() === loggedInUser._id.toString()) {
-                return row.toUserId;
-            }
-            return row.fromUserId;
-        });
+        const data = await Promise.all(
+            acceptedConnections.map(async (row) => {
+                if (row.fromUserId._id.toString() === loggedInUser._id.toString()) {
+                    return await User.findById(row.toUserId);
+                }
+                return await User.findById(row.fromUserId);
+            })
+        );
+
 
         resp.status(200).json({
             message: "Your Connections",
@@ -74,6 +79,9 @@ userRouter.get("/user/feed", userAuth, async(req, resp) => {
     try {
         const loggedInUser = req.user;
         const loggedInUserId = loggedInUser._id;
+        const page = req.query.page || 1;
+        const limit = req.query.limit || 2;
+        const skips = (page - 1) * 2;
 
         const nonAvailableProfiles = await ConnectionRequest.find({
             $or: [
@@ -90,9 +98,12 @@ userRouter.get("/user/feed", userAuth, async(req, resp) => {
 
         const profilesToFeed = await User.find({
             _id: {
-                $nin: Array.from(hideProfiles) 
+                $nin: Array.from(hideProfiles),
+                $ne: loggedInUser._id
             }
-        });
+        })
+        .skip(skips)
+        .limit(limit);
 
         resp.status(200).json({
             message: "Users for the feed",

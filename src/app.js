@@ -1,18 +1,19 @@
 const express = require("express");
 const { connectDB } = require("./config/database");
-const { User } = require("./models/user");
-const { signupValidation } = require("./utils/validation");
-const { ALLOWED_UPDATES } = require("./utils/constants");
-const bcrypt = require('bcrypt');
 const app =  express();
-const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
-const { userAuth } = require("./middleware/auth");
 const authRouter = require("./routes/auth");
 const profileRouter = require("./routes/profile");
 const requestRouter = require("./routes/request");
 const userRouter = require("./routes/user");
+const cors = require("cors");
 
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(cookieParser());
 
