@@ -36,7 +36,6 @@ profileRouter.get("/profile/feed", userAuth, async (req, resp) => {
         }
       });
 
-      console.log("avalable:", availableUsers);
       resp.json({
         data: availableUsers
       });
