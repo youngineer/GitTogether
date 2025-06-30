@@ -1,8 +1,9 @@
 const mongoose = require("mongoose");
 
+
 const connectDB = async () => {
     await mongoose.connect(
-    "mongodb+srv://youngineer:Luj25663@namastenode.4ctgdzt.mongodb.net/GitTogether"
+        process.env.DB_CONNECTION_URL
     ).then(() => {
         console.log("Database successfully connected!");
     }).catch(err => {

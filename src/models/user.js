@@ -6,6 +6,7 @@ const { Schema } = mongoose;
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
+
 const userSchema = new Schema({
     firstName: {
         type: String,
@@ -78,7 +79,7 @@ const userSchema = new Schema({
 
 userSchema.methods.getJWT = function() {
     const user = this;
-    const token = jwt.sign({ _id: user._id}, "GitTogether@123");
+    const token = jwt.sign({ _id: user._id}, process.env.JWT_SECRET);
     return token;
 };
 
